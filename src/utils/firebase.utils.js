@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -19,7 +19,6 @@ const googleProvider = new GoogleAuthProvider();
 export const logInWithGoogle = async () => {
 	try {
 		const response = await signInWithPopup(auth, googleProvider);
-		await createUserDoc(response.user);
 		console.log(response);
 	} catch (error) {
 		console.log('Error Code:', error.code);
@@ -85,3 +84,7 @@ export const createUserDoc = async (userAuth, additionalInformation = {}) => {
 		}
 	}
 };
+
+export const userSignOut = () => signOut(auth);
+
+export const userStateListener = callBack => onAuthStateChanged(auth, callBack);
