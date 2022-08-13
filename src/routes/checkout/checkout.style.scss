@@ -1,0 +1,24 @@
+.checkout-container {
+	max-width: 800px;
+	margin: auto;
+
+	.checkout-header {
+		display: flex;
+		font-weight: 600;
+		text-align: center;
+		border-bottom: 1px solid #bbbbbb;
+
+		.header-block {
+			padding: 20px 0;
+			flex: 1;
+		}
+	}
+
+	.checkout-footer {
+		padding: 20px 0;
+		font-weight: 600;
+		font-size: 28px;
+		letter-spacing: 1px;
+		text-align: right;
+	}
+}

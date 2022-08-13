@@ -12,6 +12,7 @@ $button-sub-color: #ffffff;
 	border-radius: 2px;
 	background-color: $button-main-color;
 	color: $button-sub-color;
+	cursor: pointer;
 
 	&:hover {
 		background-color: $button-sub-color;
