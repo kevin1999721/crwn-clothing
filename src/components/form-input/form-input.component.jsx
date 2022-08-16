@@ -1,11 +1,11 @@
-import './form-input.style.scss';
+import { FormInputContainer, Input, FormInputLabel } from './form-input.style';
 
 const FormInput = ({ labelValue, inputOptions }) => {
 	return (
-		<div className="form-input-container">
-			<input className="form-input" {...inputOptions} />
-			<label className="form-input-label">{labelValue}</label>
-		</div>
+		<FormInputContainer>
+			<Input {...inputOptions} />
+			<FormInputLabel>{labelValue}</FormInputLabel>
+		</FormInputContainer>
 	);
 };
 
