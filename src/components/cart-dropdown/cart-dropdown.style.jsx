@@ -1,4 +1,6 @@
-.cart-dropdown-container {
+import styled from 'styled-components';
+
+export const CartDropDownContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -13,12 +15,12 @@
 	right: 0;
 	top: 100%;
 	z-index: 10;
+`;
 
-	.cart-items {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-		gap: 10px;
-		overflow-y: scroll;
-	}
-}
+export const CartItemsContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	gap: 10px;
+	overflow-y: scroll;
+`;
