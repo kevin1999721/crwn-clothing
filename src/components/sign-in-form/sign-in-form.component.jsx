@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { logInWithEnailAndPassword, logInWithGoogle } from '../../utils/firebase.utils';
+import { useDispatch } from 'react-redux';
+
+import { emailSignInStart, googleSignInStart } from '../../store/user/user.action';
 
 import FormInput from '../form-input/form-input.component';
 import Button, { BUTTON_TYPE_CLASSES } from '../button/button.component';
@@ -11,6 +13,7 @@ const defaultFormFields = {
 };
 
 const SignInForm = () => {
+	const dispatch = useDispatch();
 	const [formFields, setFormFields] = useState(defaultFormFields);
 	const { email, password } = formFields;
 
@@ -21,8 +24,12 @@ const SignInForm = () => {
 
 	const onFormSubmit = e => {
 		e.preventDefault();
-		logInWithEnailAndPassword(email, password);
+		dispatch(emailSignInStart(email, password));
 		setFormFields(defaultFormFields);
+	};
+
+	const googleSignInHandler = () => {
+		dispatch(googleSignInStart());
 	};
 
 	return (
@@ -52,7 +59,11 @@ const SignInForm = () => {
 				/>
 				<ButtonsContainer className="buttons-container">
 					<Button>Sign in</Button>
-					<Button type="button" buttonType={BUTTON_TYPE_CLASSES.google} onClick={logInWithGoogle}>
+					<Button
+						type="button"
+						buttonType={BUTTON_TYPE_CLASSES.google}
+						onClick={googleSignInHandler}
+					>
 						Sign in with Google
 					</Button>
 				</ButtonsContainer>
