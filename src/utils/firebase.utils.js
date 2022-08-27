@@ -1,6 +1,23 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signOut, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, writeBatch, query } from 'firebase/firestore';
+import {
+	getAuth,
+	signInWithPopup,
+	signInWithEmailAndPassword,
+	createUserWithEmailAndPassword,
+	GoogleAuthProvider,
+	signOut,
+	onAuthStateChanged,
+} from 'firebase/auth';
+import {
+	getFirestore,
+	doc,
+	getDoc,
+	setDoc,
+	collection,
+	getDocs,
+	writeBatch,
+	query,
+} from 'firebase/firestore';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyCL_UVsreJb60ytq60zx1zDZxwdpPhZuQI',
@@ -19,7 +36,7 @@ const googleProvider = new GoogleAuthProvider();
 export const logInWithGoogle = async () => {
 	try {
 		const response = await signInWithPopup(auth, googleProvider);
-		console.log(response);
+		return response;
 	} catch (error) {
 		console.log('Error Code:', error.code);
 		console.log('Error Message:', error.message);
@@ -31,7 +48,7 @@ export const logInWithEnailAndPassword = async (email, password) => {
 
 	try {
 		const response = await signInWithEmailAndPassword(auth, email, password);
-		console.log(response);
+		return response;
 	} catch (error) {
 		switch (error.code) {
 			case 'auth/user-not-found':
@@ -52,7 +69,7 @@ export const signUpWithEmailAndPassword = async (email, password, additionalInfo
 
 	try {
 		const response = await createUserWithEmailAndPassword(auth, email, password);
-		await createUserDoc(response.user, additionalInformation);
+		return response;
 	} catch (error) {
 		if (error.code === 'auth/email-already-in-use') {
 			alert('Cannot create user, email already in use');
@@ -86,8 +103,6 @@ export const getCategoriesAndDocuments = async () => {
 	return categoriesMap;
 };
 
-getCategoriesAndDocuments();
-
 export const createUserDoc = async (userAuth, additionalInformation = {}) => {
 	if (!userAuth) return;
 
@@ -109,8 +124,17 @@ export const createUserDoc = async (userAuth, additionalInformation = {}) => {
 			console.log('createUserDoc Error :', error);
 		}
 	}
+
+	return docSnapShot;
 };
 
 export const userSignOut = () => signOut(auth);
 
-export const userStateListener = callBack => onAuthStateChanged(auth, callBack);
+export const getCurrentUser = () => {
+	return new Promise(resolve => {
+		const unSubscribe = onAuthStateChanged(auth, user => {
+			unSubscribe();
+			resolve(user);
+		});
+	});
+};

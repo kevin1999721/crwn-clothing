@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-import { userStateListener, createUserDoc } from './utils/firebase.utils';
-import { setCurrentUser } from './store/user/user.action';
+import { checkUserSession } from './store/user/user.action';
 
 import Navigation from './routes/navigation/navigation.component';
 import Home from './routes/home/home.component';
@@ -16,14 +15,7 @@ import './App.css';
 function App() {
 	const dispatch = useDispatch();
 	useEffect(() => {
-		const unSubscribe = userStateListener(user => {
-			if (user) {
-				createUserDoc(user);
-			}
-			dispatch(setCurrentUser(user));
-		});
-
-		return unSubscribe;
+		dispatch(checkUserSession());
 	}, [dispatch]);
 	return (
 		<Routes>

@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { signUpWithEmailAndPassword } from '../../utils/firebase.utils';
+import { useDispatch } from 'react-redux';
+
+import { signUpStart } from '../../store/user/user.action';
 
 import FormInput from '../form-input/form-input.component';
 import Button from '../button/button.component';
@@ -12,9 +14,10 @@ const defaultFormFields = {
 	confirmPassword: '',
 };
 const SignUpForm = () => {
+	const dispatch = useDispatch();
 	const [formFields, setFormFields] = useState(defaultFormFields);
 	const { displayName, email, password, confirmPassword } = formFields;
-	// console.log({ displayName, email, password, confirmPassword });
+
 	const onSignUpFormSubmit = e => {
 		e.preventDefault();
 		if (password.length < 6) {
@@ -25,7 +28,7 @@ const SignUpForm = () => {
 			return;
 		}
 
-		signUpWithEmailAndPassword(email, password, { displayName });
+		dispatch(signUpStart(email, password, { displayName }));
 		setFormFields(defaultFormFields);
 	};
 
