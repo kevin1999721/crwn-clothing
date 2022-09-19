@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, FirebaseError } from 'firebase/app';
 import {
 	getAuth,
 	signInWithPopup,
@@ -7,6 +7,8 @@ import {
 	GoogleAuthProvider,
 	signOut,
 	onAuthStateChanged,
+	User,
+	UserCredential,
 } from 'firebase/auth';
 import {
 	getFirestore,
@@ -17,7 +19,10 @@ import {
 	getDocs,
 	writeBatch,
 	query,
+	QueryDocumentSnapshot,
 } from 'firebase/firestore';
+
+import { Category } from '../store/categories/categories.type';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyCL_UVsreJb60ytq60zx1zDZxwdpPhZuQI',
@@ -33,53 +38,70 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-export const logInWithGoogle = async () => {
+export const logInWithGoogle = async (): Promise<UserCredential | undefined> => {
 	try {
 		const response = await signInWithPopup(auth, googleProvider);
 		return response;
 	} catch (error) {
-		console.log('Error Code:', error.code);
-		console.log('Error Message:', error.message);
+		console.log('Error Code:', error);
+		console.log('Error Message:', error);
 	}
 };
 
-export const logInWithEnailAndPassword = async (email, password) => {
+export const logInWithEnailAndPassword = async (
+	email: string,
+	password: string
+): Promise<UserCredential | undefined> => {
 	if (!email || !password) return;
 
 	try {
 		const response = await signInWithEmailAndPassword(auth, email, password);
 		return response;
 	} catch (error) {
-		switch (error.code) {
-			case 'auth/user-not-found':
-				alert('Email was not signed up !');
-				break;
-			case 'auth/wrong-password':
-				alert('Incorrect password for email !');
-				break;
-			default:
-				console.log('Sign in error :', error.code);
-				break;
+		if (error instanceof FirebaseError) {
+			switch (error.code) {
+				case 'auth/user-not-found':
+					alert('Email was not signed up !');
+					break;
+				case 'auth/wrong-password':
+					alert('Incorrect password for email !');
+					break;
+				default:
+					console.log('Sign in error :', error.code);
+					break;
+			}
 		}
 	}
 };
 
-export const signUpWithEmailAndPassword = async (email, password, additionalInformation = {}) => {
+export const signUpWithEmailAndPassword = async (
+	email: string,
+	password: string
+): Promise<void | UserCredential> => {
 	if (!email || !password) return;
 
 	try {
 		const response = await createUserWithEmailAndPassword(auth, email, password);
 		return response;
 	} catch (error) {
-		if (error.code === 'auth/email-already-in-use') {
-			alert('Cannot create user, email already in use');
-		} else {
-			console.log('user creation encountered an error', error);
+		if (error instanceof FirebaseError) {
+			if (error.code === 'auth/email-already-in-use') {
+				alert('Cannot create user, email already in use');
+			} else {
+				console.log('user creation encountered an error', error);
+			}
 		}
 	}
 };
 
-export const createCollectionAndDocuments = async (collectionKey, objectsToAdd) => {
+type ObjectsToAdd = {
+	title: string;
+};
+
+export const createCollectionAndDocuments = async <T extends ObjectsToAdd>(
+	collectionKey: string,
+	objectsToAdd: T[]
+): Promise<void> => {
 	const batch = writeBatch(db);
 	const collectionRef = collection(db, collectionKey);
 
@@ -92,7 +114,7 @@ export const createCollectionAndDocuments = async (collectionKey, objectsToAdd) 
 	console.log('batch done!');
 };
 
-export const getCategoriesAndDocuments = async () => {
+export const getCategoriesAndDocuments = async (): Promise<Category[]> => {
 	const collectionRef = collection(db, 'categories');
 	const q = query(collectionRef);
 
@@ -100,10 +122,23 @@ export const getCategoriesAndDocuments = async () => {
 
 	const categoriesMap = querySnapshot.docs.map(docSnapshot => docSnapshot.data());
 
-	return categoriesMap;
+	return categoriesMap as Category[];
 };
 
-export const createUserDoc = async (userAuth, additionalInformation = {}) => {
+export type AdditionalInformation = {
+	displayName?: string;
+};
+
+export type UserData = {
+	dispalyName: string;
+	email: string;
+	createAt: Date;
+};
+
+export const createUserDoc = async (
+	userAuth: User,
+	additionalInformation = {} as AdditionalInformation
+): Promise<QueryDocumentSnapshot<UserData> | void> => {
 	if (!userAuth) return;
 
 	const userDocRef = doc(db, 'users', userAuth.uid);
@@ -120,17 +155,20 @@ export const createUserDoc = async (userAuth, additionalInformation = {}) => {
 				createAt,
 				...additionalInformation,
 			});
+
+			const currentDocSnapShot = await getDoc(userDocRef);
+			return currentDocSnapShot as QueryDocumentSnapshot<UserData>;
 		} catch (error) {
 			console.log('createUserDoc Error :', error);
 		}
 	}
 
-	return docSnapShot;
+	return docSnapShot as QueryDocumentSnapshot<UserData>;
 };
 
 export const userSignOut = () => signOut(auth);
 
-export const getCurrentUser = () => {
+export const getCurrentUser = (): Promise<User | null> => {
 	return new Promise(resolve => {
 		const unSubscribe = onAuthStateChanged(auth, user => {
 			unSubscribe();
