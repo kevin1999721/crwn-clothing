@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { emailSignInStart, googleSignInStart } from '../../store/user/user.action';
@@ -17,12 +17,12 @@ const SignInForm = () => {
 	const [formFields, setFormFields] = useState(defaultFormFields);
 	const { email, password } = formFields;
 
-	const onInputValueChange = e => {
+	const onInputValueChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setFormFields({ ...formFields, [name]: value });
 	};
 
-	const onFormSubmit = e => {
+	const onFormSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		dispatch(emailSignInStart(email, password));
 		setFormFields(defaultFormFields);

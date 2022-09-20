@@ -1,20 +1,35 @@
+import { FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+
+import { CartItem } from '../../store/cart/cart.type';
 
 import { addItemToCart, removeItemFromCart, clearItemFromCart } from '../../store/cart/cart.action';
 import { selectCartItems } from '../../store/cart/cart.select';
 
-import { CheckoutItemContainer, ImageContainer, QuantityContainer, QuantityText, QuantityButton, RemoveButtonContainer, RemoveButton } from './checkout-item.style';
+import {
+	CheckoutItemContainer,
+	ImageContainer,
+	QuantityContainer,
+	QuantityText,
+	QuantityButton,
+	RemoveButtonContainer,
+	RemoveButton,
+} from './checkout-item.style';
 
-const CheckoutItem = ({ cartitem }) => {
-	const { name, imageUrl, price, quantity } = cartitem;
+type CheckoutItemProps = {
+	cartItem: CartItem;
+};
+
+const CheckoutItem: FC<CheckoutItemProps> = ({ cartItem }) => {
+	const { name, imageUrl, price, quantity } = cartItem;
 	const cartItems = useSelector(selectCartItems);
 	const dispatch = useDispatch();
 
-	const addItemHanlder = () => dispatch(addItemToCart(cartItems, cartitem));
+	const addItemHanlder = () => dispatch(addItemToCart(cartItems, cartItem));
 
-	const removeItemHanlder = () => dispatch(removeItemFromCart(cartItems, cartitem));
+	const removeItemHanlder = () => dispatch(removeItemFromCart(cartItems, cartItem));
 
-	const clearItemHanlder = () => dispatch(clearItemFromCart(cartItems, cartitem));
+	const clearItemHanlder = () => dispatch(clearItemFromCart(cartItems, cartItem));
 
 	return (
 		<CheckoutItemContainer>
