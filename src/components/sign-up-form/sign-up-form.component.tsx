@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, FormEvent, ChangeEvent } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { signUpStart } from '../../store/user/user.action';
@@ -18,7 +18,7 @@ const SignUpForm = () => {
 	const [formFields, setFormFields] = useState(defaultFormFields);
 	const { displayName, email, password, confirmPassword } = formFields;
 
-	const onSignUpFormSubmit = e => {
+	const onSignUpFormSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		if (password.length < 6) {
 			alert('Password should be at least 6 characters');
@@ -32,7 +32,7 @@ const SignUpForm = () => {
 		setFormFields(defaultFormFields);
 	};
 
-	const onInputValueChange = e => {
+	const onInputValueChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setFormFields({ ...formFields, [name]: value });
 	};

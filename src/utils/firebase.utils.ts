@@ -130,7 +130,7 @@ export type AdditionalInformation = {
 };
 
 export type UserData = {
-	dispalyName: string;
+	displayName: string;
 	email: string;
 	createAt: Date;
 };
